@@ -141,8 +141,6 @@
   </div>
 
   <script>
-    const formData = {};
-
     document.getElementById('specForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const form = new FormData(e.target);
@@ -151,9 +149,7 @@
           alert('모든 항목을 입력해주세요.');
           return;
         }
-        formData[key] = value;
       }
-
       const age = parseInt(form.get('age'));
       const income = parseInt(form.get('income'));
       let score = 0;
@@ -189,20 +185,35 @@
       const phone = document.getElementById('phoneInput').value;
       if (!phone) return alert('전화번호를 입력해주세요.');
 
-      formData['phone'] = phone;
+      const formElement = document.getElementById('specForm');
+      const formData = new FormData(formElement);
 
-      fetch('https://script.google.com/macros/s/AKfycbyuQr1HcG2bW4SIj-FQFFxyNWx-ldkt_988LIXcXPwJ0j9aPfLU1csdgGcMHxjKTOX0/exec', {
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      data.phone = phone;
+
+      fetch('https://script.google.com/macros/s/AKfycbyYMHT231E2ny6GkZ5oUU1YcBZG5RRnGYSFhaW2S8BsiZhEBSg0L-8iIR4IK84JWQGz/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(data)
       })
-      .then(() => {
-        alert('제출되었습니다! 매칭 가능한 프로필을 곧 보내드릴게요.');
-        document.getElementById('phoneForm').style.display = 'none';
+      .then(res => res.json())
+      .then(response => {
+        if (response.result === 'success') {
+          alert('제출되었습니다! 매칭 가능한 프로필을 곧 보내드릴게요.');
+          document.getElementById('phoneForm').style.display = 'none';
+        } else {
+          alert('제출 실패! 다시 시도해주세요.');
+        }
       })
-      .catch(() => alert('제출 중 오류가 발생했습니다.'));
+      .catch(err => {
+        alert('서버 오류가 발생했습니다.');
+        console.error(err);
+      });
     }
   </script>
 </body>
