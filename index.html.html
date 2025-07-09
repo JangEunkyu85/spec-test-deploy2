@@ -184,8 +184,19 @@
     function submitPhone() {
       const phone = document.getElementById('phoneInput').value;
       if (!phone) return alert('전화번호를 입력해주세요.');
-      alert('제출되었습니다! 매칭 가능한 프로필을 곧 보내드릴게요.');
-      document.getElementById('phoneForm').style.display = 'none';
+
+      const form = new FormData(document.getElementById('specForm'));
+      form.append('phone', phone);
+
+      fetch('https://script.google.com/macros/s/AKfycbyaZdGzc1WPFUIPS83Pw0nuQUDw208UCh6lqBbHqNEocGNMlpim-SGv-9T5dSeYFlTb/exec', {
+        method: 'POST',
+        body: form
+      })
+      .then(() => {
+        alert('제출되었습니다! 매칭 가능한 프로필을 곧 보내드릴게요.');
+        document.getElementById('phoneForm').style.display = 'none';
+      })
+      .catch(() => alert('제출 중 오류가 발생했습니다.'));
     }
   </script>
 </body>
