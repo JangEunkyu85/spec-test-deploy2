@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 스펙 경쟁력 테스트</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result, #phoneForm {
+      margin-top: 25px;
+      padding: 18px;
+      background: #e0f7fa;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+      display: none;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px 15px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      label, input, select, button {
+        font-size: 14px;
+      }
+      button {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>내 스펙 경쟁력 테스트</h1>
+    <form id="specForm">
+      <label>성별</label>
+      <select name="gender" required>
+        <option value="">선택</option>
+        <option value="남성">남성</option>
+        <option value="여성">여성</option>
+      </select>
+
+      <label>나이</label>
+      <input type="number" name="age" placeholder="예: 30" required>
+
+      <label>거주지</label>
+      <input type="text" name="location" placeholder="예: 서울, 경기" required>
+
+      <label>학력</label>
+      <select name="education" required>
+        <option value="">선택</option>
+        <option>고졸</option>
+        <option>초대졸</option>
+        <option>대졸</option>
+        <option>석사</option>
+        <option>박사</option>
+      </select>
+
+      <label>연봉 (만원)</label>
+      <input type="number" name="income" placeholder="예: 5000" required>
+
+      <label>직업</label>
+      <select name="job" required>
+        <option value="">선택</option>
+        <option>회사원</option>
+        <option>자영업</option>
+        <option>전문직</option>
+        <option>공무원</option>
+        <option>사업가</option>
+        <option>특수직</option>
+      </select>
+
+      <label>외모 수준</label>
+      <select name="appearance" required>
+        <option value="">선택</option>
+        <option>존잘/존예</option>
+        <option>훈훈</option>
+        <option>흔남/흔녀</option>
+        <option>하</option>
+      </select>
+
+      <label>성격 유형 (MBTI)</label>
+      <input type="text" name="mbti" placeholder="예: ENFP" required>
+
+      <button type="submit">스펙 분석하기</button>
+    </form>
+
+    <div id="result"></div>
+
+    <div id="phoneForm">
+      <p>매칭 이성 프로필 + 결혼정보회사 할인 쿠폰을 받으시려면 전화번호를 입력해주세요.</p>
+      <input type="text" id="phoneInput" placeholder="예: 010-1234-5678">
+      <button onclick="submitPhone()">제출</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('specForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      for (let [key, value] of form.entries()) {
+        if (!value) {
+          alert('모든 항목을 입력해주세요.');
+          return;
+        }
+      }
+      const age = parseInt(form.get('age'));
+      const income = parseInt(form.get('income'));
+      let score = 0;
+
+      if (income >= 6000) score += 30;
+      else if (income >= 4000) score += 20;
+      else score += 10;
+
+      if (age >= 25 && age <= 34) score += 20;
+      else if (age >= 35 && age <= 39) score += 10;
+
+      const edu = form.get('education');
+      if (edu === '박사') score += 20;
+      else if (edu === '석사') score += 15;
+      else if (edu === '대졸') score += 10;
+      else score += 5;
+
+      const job = form.get('job');
+      if (['전문직','공무원','사업가'].includes(job)) score += 20;
+      else score += 10;
+
+      let message = '';
+      if (score >= 70) message = '당신은 결혼시장 상위 10% 스펙입니다!';
+      else if (score >= 50) message = '상위 30% 수준의 경쟁력을 가지고 있어요.';
+      else message = '개선 여지가 있으나 충분한 잠재력을 가진 스펙입니다!';
+
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('result').innerText = message;
+      document.getElementById('phoneForm').style.display = 'block';
+    });
+
+    function submitPhone() {
+      const phone = document.getElementById('phoneInput').value;
+      if (!phone) return alert('전화번호를 입력해주세요.');
+
+      const formElement = document.getElementById('specForm');
+      const formData = new FormData(formElement);
+
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      data.phone = phone;
+
+      fetch('https://script.google.com/macros/s/AKfycbwHWmyTEdYBDXo7u_5f2Q3jBuBdjK4ZBoM8bJyuCj2D8LK7OT5iNNur1k4nIIaXAgTM/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.result === 'success') {
+          alert('제출되었습니다! 매칭 가능한 프로필을 곧 보내드릴게요.');
+          document.getElementById('phoneForm').style.display = 'none';
+        } else {
+          alert('제출 실패! 다시 시도해주세요.');
+        }
+      })
+      .catch(err => {
+        alert('서버 오류가 발생했습니다.');
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
